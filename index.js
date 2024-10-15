@@ -25,30 +25,34 @@ app.get("/api/hello", function (req, res) {
 });
 
 app.get("/api/:date", (req, res) => {
-  const paramsDate = req.params.date;
-  if (!paramsDate) {
-    res.status(200).json({
-      unix: Date.now(),
-      utc: new Date().toUTCString(),
-    });
-  } else if (isDate(req.params.date)) {
+  if (isDate(req.params.date)) {
     const date = new Date(req.params.date);
     const unixTime = date.getTime();
     res.status(200).json({
       unix: unixTime,
       utc: date.toUTCString(),
     });
+    return;
   } else if (isNumeric(req.params.date)) {
     const date = new Date(parseInt(req.params.date));
     res.status(200).json({
       unix: date.getTime(),
       utc: date.toUTCString(),
     });
+    return;
   } else {
     res.status(400).json({
       error: "Invalid Date",
     });
+    return;
   }
+});
+
+app.get("/api", (req, res) => {
+  res.status(400).json({
+    unix: new Date().getTime(),
+    utc: new Date().toUTCString(),
+  });
 });
 // Listen on port set in environment variable or default to 3000
 var listener = app.listen(process.env.PORT || 3000, function () {
